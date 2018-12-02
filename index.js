@@ -11,7 +11,7 @@ const express = require('express');
 const app = express();
 
 const bodyParser = require('body-parser');
-const expressHbs = require('express-handlebars');
+// const expressHbs = require('express-handlebars');
 
 
 /**
@@ -23,9 +23,14 @@ const expressHbs = require('express-handlebars');
  * My Modules
  */
 
+app.set('view engine', 'ejs');
 
-app.engine('hbs', expressHbs());
-app.set('view engine', 'hbs');
+// app.engine('hbs', expressHbs({
+//     layoutDir: 'views/layouts',
+//     defaultLayout: 'main-layout.hbs',
+//     ectname: 'hbs'
+// }));
+// app.set('view engine', 'hbs');
 //  app.set('view engine', 'pug');
 app.set('views', 'views');
 
