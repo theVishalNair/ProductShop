@@ -3,10 +3,11 @@ const mongodb = require('mongodb');
 
 
 class User {
-    constructor(username, email, cart) {
+    constructor(username, email, cart, id) {
         this.name = username;
         this.email = email;
         this.cart = cart;
+        this._id = id
     }
 
     save() {
@@ -15,24 +16,37 @@ class User {
     }
 
     addToCart(product) {
-        // if(this.cart && this.cart.items){
-        //     const carProduct = this.cart.items.findIndex(cp => {
-        //         return cp._id  === product.id;
-        //     });
+        const cartProductIndex = this.cart.items.findIndex(cp => {
+            return cp.productId.toString() == product._id.toString();
+        });
+        let newQuantity = 1;
+        const updatedCartItems = [...this.cart.items];
+
+        if (cartProductIndex >= 0) {
+            newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+            updatedCartItems[cartProductIndex].quantity = newQuantity;
+        } else {
+            updatedCartItems.push({
+                productId: new mongodb.ObjectId(product._id),
+                quantity: newQuantity
+            });
+        }
         const updatedCart = {
-            items: [{ ...product,
-                quantity: 1
-            }]
+            items: updatedCartItems
         };
         const db = getDb();
-        return db.collections('users').updateOne({
-            _id: new mongodb.ObjectId(userId)
+        console.log(new mongodb.ObjectId(this._id))
+        return db.collection('users').updateOne({
+            _id: new mongodb.ObjectId(this._id)
         }, {
             $set: {
                 cart: updatedCart
             }
         })
-        // }
+    }
+
+    getCart() {
+        return this.cart;
     }
 
     static findById(userId) {
